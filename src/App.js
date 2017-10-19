@@ -3,38 +3,46 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
-    callApiOrgs(){
-    fetch('https://api.github.com/orgs/github')
-    .then((result) => {
-      return result.json();
-    }).then((jsonResult) => {
-      console.log(jsonResult);
-    })
-  }
-  callApiMembers(){
-    fetch('https://api.github.com/orgs/github/members')
-    .then((result) => {
-      return result.json();
-    }).then((jsonResult) => {
-      console.log(jsonResult);
-    })
-  }
+
+  constructor(props) {
+      super(props);
+      this.state = {
+        isLoading: true
+      };
+      this.api = this.api.bind(this);
+
+    }
+
+api() {
+  var th = this;
+  return fetch('https://api.github.com/orgs/github/members')
+  .then(function (response) {
+    console.log(response)
+    th.setState({
+      isLoading: false,
+      response: response
+    });
+  });
+}
+
   render() {
+    if (this.state.isLoading) {
+      return (
+        <div className="App">
+        <button onClick={() => this.api()}>COMEÇAR</button>
+        </div>
+      )
+    }
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <button onClick={() => this.callApiOrgs()}>
-        Click here to call Org API
-      </button>
-      <button onClick={() => this.callApiMembers()}>
-        Click here to call Org API
-      </button>
+        <h1>Dev Marketplace</h1>
+        {Object.keys(this.state.response).map(jobs =>
+        <div key={jobs.id}>
+              <a href={jobs.url}>
+                {jobs.login}
+              </a>
+            </div>
+      )}
       </div>
     );
   }

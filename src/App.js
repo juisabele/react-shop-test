@@ -10,22 +10,31 @@ class App extends Component {
         isLoading: true
       };
       this.api = this.api.bind(this);
-
     }
 
 api() {
   var th = this;
-  return fetch('https://api.github.com/orgs/github/members')
-  .then(function (response) {
-    console.log(response)
+  return fetch('https://api.github.com/orgs/github/members').then(response => {
+    return response.json();
+  })
+  .then(function (responseJson) {
+    var parsed = responseJson;
+
+var arr = [];
+
+for(var x in parsed){
+  arr.push(parsed[x]);
+}
+console.log(arr, typeof arr)
     th.setState({
       isLoading: false,
-      response: response
+      responseArr: arr
     });
   });
 }
 
   render() {
+    let jobs = this.state.responseArr;
     if (this.state.isLoading) {
       return (
         <div className="App">
@@ -36,13 +45,9 @@ api() {
     return (
       <div className="App">
         <h1>Dev Marketplace</h1>
-        {Object.keys(this.state.response).map(jobs =>
-        <div key={jobs.id}>
-              <a href={jobs.url}>
-                {jobs.login}
-              </a>
-            </div>
-      )}
+          <div>
+                <h1>{jobs}</h1>
+              </div>
       </div>
     );
   }
